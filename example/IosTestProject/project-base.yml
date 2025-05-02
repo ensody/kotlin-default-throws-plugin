@@ -1,0 +1,33 @@
+options:
+  minimumXcodeGenVersion: 2.42.0
+  deploymentTarget:
+    iOS: "15"
+  useBaseInternationalization: false
+
+targetTemplates:
+  App:
+    type: application
+    platform: iOS
+    sources: [Sources]
+    info:
+      path: Sources/Info.plist
+    settings:
+      groups: [base]
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ensody.${PROJECT_NAME}
+  Test:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [Tests]
+    info:
+      path: Tests/Info.plist
+    settings:
+      groups: [base]
+    dependencies:
+      - target: ${PROJECT_NAME}
+        embed: false
+        link: false
+
+settingGroups:
+  base:
+      SWIFT_VERSION: 6.0

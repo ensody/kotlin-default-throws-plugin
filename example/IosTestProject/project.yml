@@ -1,0 +1,11 @@
+name: ${PROJECT_NAME}
+
+targets:
+  ${PROJECT_NAME}:
+    templates: [App]
+
+  Tests:
+    templates: [Test]
+
+include:
+  - project-base.yml

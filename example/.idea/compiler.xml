@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="kotlin-default-throws-plugin.compiler-plugin" options="-proc:none" />
+      <module name="kotlin-default-throws-plugin.compiler-plugin.main" options="-proc:none" />
+      <module name="kotlin-default-throws-plugin.compiler-plugin.test" options="-proc:none" />
+    </option>
+  </component>
+</project>

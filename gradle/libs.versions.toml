@@ -1,0 +1,29 @@
+[versions]
+kotlin = "2.1.20"
+androidGradle = "8.8.2"
+dokka = "2.0.0"
+nexusPublish = "2.0.0"
+autoService = "1.1.1"
+
+[libraries]
+kotlin-compiler-embeddable =  { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
+kotlin-test-main =  { module = "org.jetbrains.kotlin:kotlin-test" }
+kotlin-test-junit =  { module = "org.jetbrains.kotlin:kotlin-test-junit" }
+
+ktlint-cli = { module = "com.pinterest.ktlint:ktlint-cli", version = "1.5.0" }
+
+android-gradle = { module = "com.android.tools.build:gradle", version.ref = "androidGradle" }
+kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+dokka-gradle = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
+nexus-gradle = { module = "io.github.gradle-nexus:publish-plugin", version.ref = "nexusPublish" }
+
+google-autoservice = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "androidGradle" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+jetbrains-compose = { id = "org.jetbrains.compose", version = "1.7.3" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-cocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
+nexusPublish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "nexusPublish" }

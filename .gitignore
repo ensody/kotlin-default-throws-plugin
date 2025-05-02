@@ -1,0 +1,25 @@
+*.iml
+.gradle
+.kotlin
+build
+/local.properties
+/.credentials
+/secrets.properties
+/.idea
+/.venv*
+/.ruby*
+.DS_Store*
+/captures
+/docs/reference/
+/docs/index.md
+/docs/changelog.md
+/site
+.externalNativeBuild
+.cxx
+/kotlin-js-store
+
+# iOS projects
+*.podspec
+*.xcodeproj
+*.xcworkspace
+Pods

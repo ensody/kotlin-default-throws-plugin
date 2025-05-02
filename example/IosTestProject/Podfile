@@ -1,0 +1,12 @@
+source 'https://cdn.cocoapods.org/'
+
+use_frameworks!
+platform :ios, '15.0'
+
+target 'IosTestProject' do
+  pod 'Shared', :path => "../lib/"
+
+  target 'Tests' do
+    inherit! :complete
+  end
+end
