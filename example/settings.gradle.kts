@@ -1,7 +1,6 @@
 pluginManagement {
     includeBuild("..")
     includeBuild("../build-logic")
-    include(":gradle-plugin")
     repositories {
         google()
         gradlePluginPortal()
@@ -18,5 +17,4 @@ dependencyResolutionManagement {
     }
 }
 
-includeBuild("..")
 include(":lib")

@@ -2,6 +2,10 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
+
+cd "$ROOT/.."
+./gradlew podspec generateDummyFramework
+
 cd "$ROOT"
 
 if ! command -v xcodegen &> /dev/null; then

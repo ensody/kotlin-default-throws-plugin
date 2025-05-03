@@ -1,5 +1,7 @@
 # kotlin-default-throws-plugin
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.ensody.kotlindefaultthrows/gradle-plugin/badge.svg?gav=true)](https://maven-badges.herokuapp.com/maven-central/com.ensody.kotlindefaultthrows/gradle-plugin?gav=true)
+
 This Kotlin compiler plugin adds default `@Throws(Throwable::class)` annotations to all `suspend fun` in the whole code.
 
 In other words, it turns this:
@@ -50,6 +52,19 @@ plugins {
     id("com.ensody.kotlindefaultthrows")
 }
 ```
+
+## iOS example project
+
+In example/IosTestProject you can find a sample project with unit tests to confirm the compiler plugin's behavior. Just run the following in the IosTestProject folder:
+
+```shell
+./generate-project.sh
+open IosTestProject.xcworkspace
+```
+
+Once Xcode has opened you can play with the unit tests.
+
+If you edit example/lib/build.gradle.kts and in the `plugins` section remove the `id("com.ensody.kotlindefaultthrows")` and re-run the unit tests you'll see what happens without this plugin when you forget to add `@Throws` annotations.
 
 ## License
 
