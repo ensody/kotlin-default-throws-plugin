@@ -1,3 +1,5 @@
+@file:Suppress("RedundantSuspendModifier", "UnusedParameter")
+
 package com.example
 
 public fun globalFoo() {}

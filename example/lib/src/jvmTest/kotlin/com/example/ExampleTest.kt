@@ -59,27 +59,27 @@ class ExampleTest {
         val methods = cls.declaredMethods.associateBy { it.name }
         assertEquals(
             listOf(),
-            methods["foo"]!!.exceptionTypes.toList(),
+            methods.getValue("foo").exceptionTypes.toList(),
         )
         assertEquals(
             listOf(RuntimeException::class.java),
-            methods["fooAnnotated"]!!.exceptionTypes.toList(),
+            methods.getValue("fooAnnotated").exceptionTypes.toList(),
         )
         assertEquals(
             listOf(Throwable::class.java),
-            methods["coFoo"]!!.exceptionTypes.toList(),
+            methods.getValue("coFoo").exceptionTypes.toList(),
         )
         assertEquals(
             listOf(RuntimeException::class.java),
-            methods["coFooAnnotated"]!!.exceptionTypes.toList(),
+            methods.getValue("coFooAnnotated").exceptionTypes.toList(),
         )
         assertEquals(
             listOf(Throwable::class.java),
-            methods["coFooGeneric"]!!.exceptionTypes.toList(),
+            methods.getValue("coFooGeneric").exceptionTypes.toList(),
         )
         assertEquals(
             listOf(RuntimeException::class.java),
-            methods["coFooGenericAnnotated"]!!.exceptionTypes.toList(),
+            methods.getValue("coFooGenericAnnotated").exceptionTypes.toList(),
         )
     }
 }

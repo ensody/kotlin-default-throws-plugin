@@ -4,6 +4,7 @@ package com.ensody.buildlogic
 
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import io.github.gradlenexus.publishplugin.NexusPublishExtension
+import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
@@ -23,12 +24,14 @@ class BuildLogicPlugin : Plugin<Project> {
             if (rootProject.name == "example") {
                 if (!isRootProject) {
                     pluginManager.apply("org.jetbrains.kotlin.multiplatform")
+                    pluginManager.apply("io.gitlab.arturbosch.detekt")
                 }
             } else if (!isRootProject) {
                 pluginManager.apply("org.jetbrains.kotlin.jvm")
                 if ("gradle-plugin" in project.name) {
                     pluginManager.apply("java-gradle-plugin")
                 }
+                pluginManager.apply("io.gitlab.arturbosch.detekt")
                 pluginManager.apply("maven-publish")
             }
         }
@@ -50,6 +53,8 @@ fun Project.initBuildLogic() {
         forwardTaskToExampleProject("testAll", "verification")
         forwardTaskToExampleProject("ktlint", "verification")
         forwardTaskToExampleProject("ktlintFormat", "formatting")
+        forwardTaskToExampleProject("forwardDetekt", "other", "detekt")
+        tasks.getByName("detekt").dependsOn("forwardDetekt")
 
         configure<NexusPublishExtension> {
             repositories {
@@ -64,11 +69,11 @@ fun Project.initBuildLogic() {
     }
 }
 
-fun Project.forwardTaskToExampleProject(name: String, group: String?) {
+fun Project.forwardTaskToExampleProject(name: String, group: String?, targetName: String = name) {
     tasks.register(name) {
         group?.let { this.group = it }
         doLast {
-            shell("./gradlew $name", workingDir = file("example"), inheritIO = true)
+            shell("./gradlew --no-daemon $targetName", workingDir = file("example"), inheritIO = true)
         }
     }
 }
@@ -98,6 +103,9 @@ fun Project.setupBuildLogic(block: Project.() -> Unit) {
         }
         if (extensions.findByType<KotlinJvmExtension>() != null) {
             setupKotlinJvm()
+        }
+        if (extensions.findByType<DetektExtension>() != null) {
+            setupDetekt()
         }
         if (extensions.findByType<PublishingExtension>() != null) {
             setupPublication(
