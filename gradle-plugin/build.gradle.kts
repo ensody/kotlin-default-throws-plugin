@@ -1,5 +1,5 @@
-import com.android.build.gradle.internal.cxx.io.writeTextIfDifferent
 import com.ensody.buildlogic.setupBuildLogic
+import com.ensody.buildlogic.withGeneratedBuildFile
 
 plugins {
     id("com.ensody.build-logic")
@@ -19,14 +19,13 @@ setupBuildLogic {
         }
     }
 
-    val buildConfig = """
-    package com.ensody.kotlindefaultthrows.gradle
+    withGeneratedBuildFile("buildConfig", "com/ensody/kotlindefaultthrows/gradle/BuildConfig.kt") {
+        """
+        package com.ensody.kotlindefaultthrows.gradle
 
-    internal object BuildConfig {
-        const val VERSION = "$version"
+        internal object BuildConfig {
+            const val VERSION = "$version"
+        }
+        """
     }
-    """.trimIndent().trimStart()
-    val generatedDir = "$projectDir/build/generated/source/buildConfig"
-    sourceSets["main"].kotlin.srcDir(generatedDir)
-    file("$generatedDir/com/ensody/kotlindefaultthrows/gradle/BuildConfig.kt").writeTextIfDifferent(buildConfig)
 }
