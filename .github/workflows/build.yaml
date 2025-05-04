@@ -31,14 +31,14 @@ jobs:
           ./gradlew help
           ./gradlew --version
       - name: Build project
-        run: ./gradlew assemble example:lib:assemble --stacktrace
+        run: ./gradlew assemble --stacktrace
       - name: Run tests
-        run: ./gradlew example:lib:allTests --stacktrace
+        run: ./gradlew testAll --stacktrace
       # TODO: switch to Kover
 #      - name: Create coverage report
 #        run: ./gradlew jacocoTestReportDefault
       - name: Final checks
-        run: ./gradlew ktlint example:lib:ktlint
+        run: ./gradlew ktlint
 
       # Publish packages
       - name: Publish package

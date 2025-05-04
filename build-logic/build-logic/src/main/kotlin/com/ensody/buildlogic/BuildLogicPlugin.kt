@@ -2,6 +2,7 @@
 
 package com.ensody.buildlogic
 
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import io.github.gradlenexus.publishplugin.NexusPublishExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -42,6 +43,14 @@ fun Project.initBuildLogic() {
 
         if (rootProject.name == "example") return@initBuildLogicBase
 
+        forwardTaskToExampleProject("assemble", "build")
+        forwardTaskToExampleProject("check", "verification")
+        forwardTaskToExampleProject("test", "verification")
+        forwardTaskToExampleProject("allTests", "verification")
+        forwardTaskToExampleProject("testAll", "verification")
+        forwardTaskToExampleProject("ktlint", "verification")
+        forwardTaskToExampleProject("ktlintFormat", "formatting")
+
         configure<NexusPublishExtension> {
             repositories {
                 sonatype {
@@ -51,6 +60,15 @@ fun Project.initBuildLogic() {
                     password = System.getenv("PUBLICATION_PASSWORD")
                 }
             }
+        }
+    }
+}
+
+fun Project.forwardTaskToExampleProject(name: String, group: String?) {
+    tasks.register(name) {
+        group?.let { this.group = it }
+        doLast {
+            shell("./gradlew $name", workingDir = file("example"), inheritIO = true)
         }
     }
 }
@@ -73,6 +91,7 @@ fun Project.setupBuildLogic(block: Project.() -> Unit) {
                 jvm()
                 allIos()
             }
+            tasks.register("testAll").dependsOn("jvmTest")
         }
         if (extensions.findByType<KotlinBaseExtension>() != null) {
             setupKtLint(libs.findLibrary("ktlint-cli").get())
