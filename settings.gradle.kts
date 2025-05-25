@@ -1,6 +1,5 @@
 pluginManagement {
     includeBuild("build-logic")
-    includeBuild("example")
 
     repositories {
         google()

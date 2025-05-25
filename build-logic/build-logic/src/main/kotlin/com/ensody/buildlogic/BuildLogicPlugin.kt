@@ -7,6 +7,7 @@ import io.github.gradlenexus.publishplugin.NexusPublishExtension
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.configure
@@ -46,7 +47,11 @@ fun Project.initBuildLogic() {
 
         if (rootProject.name == "example") return@initBuildLogicBase
 
-        forwardTaskToExampleProject("assemble", "build")
+        forwardTaskToExampleProject("assemble", "build") {
+            doFirst {
+                shell("./gradlew publishAllPublicationsToLocalMavenRepository", inheritIO = true)
+            }
+        }
         forwardTaskToExampleProject("check", "verification")
         forwardTaskToExampleProject("test", "verification")
         forwardTaskToExampleProject("allTests", "verification")
@@ -69,17 +74,33 @@ fun Project.initBuildLogic() {
     }
 }
 
-fun Project.forwardTaskToExampleProject(name: String, group: String?, targetName: String = name) {
+fun Project.forwardTaskToExampleProject(
+    name: String,
+    group: String?,
+    targetName: String = name,
+    block: Task.() -> Unit = {},
+) {
     tasks.register(name) {
         group?.let { this.group = it }
         doLast {
-            shell("./gradlew --no-daemon $targetName", workingDir = file("example"), inheritIO = true)
+            shell(
+                "./gradlew --no-daemon $targetName",
+                workingDir = file("example"),
+                env = mapOf("_LOCAL_PLUGIN_VERSION" to version.toString()),
+                inheritIO = true,
+            )
         }
+        block()
     }
 }
 
 fun Project.setupRepositories() {
     repositories {
+        if (rootProject.name == "example") {
+            maven {
+                url = URI("file://$rootDir/../build/localmaven")
+            }
+        }
         google()
         mavenCentral()
         if (System.getenv("RUNNING_ON_CI") != "true") {
@@ -130,6 +151,15 @@ fun Project.setupBuildLogic(block: Project.() -> Unit) {
                             organization = "Ensody GmbH"
                             organizationUrl = url
                         }
+                    }
+                }
+            }
+            configure<PublishingExtension> {
+                // Local publication for the example project
+                repositories {
+                    maven {
+                        name = "localMaven"
+                        url = URI("file://$rootDir/build/localmaven")
                     }
                 }
             }

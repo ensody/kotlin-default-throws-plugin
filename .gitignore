@@ -7,6 +7,8 @@ local.properties
 .idea
 .venv*
 .ruby*
+*.pyc
+__pycache__
 .DS_Store*
 /captures
 .externalNativeBuild

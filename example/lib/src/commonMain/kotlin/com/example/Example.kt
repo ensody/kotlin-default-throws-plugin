@@ -1,4 +1,4 @@
-@file:Suppress("RedundantSuspendModifier", "UnusedParameter")
+@file:Suppress("RedundantSuspendModifier", "UNUSED_PARAMETER", "unused")
 
 package com.example
 

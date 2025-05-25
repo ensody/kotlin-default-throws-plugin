@@ -3,7 +3,7 @@ import com.ensody.buildlogic.setupBuildLogic
 
 plugins {
     id("com.ensody.build-logic")
-    id("com.ensody.kotlindefaultthrows")
+    id("com.ensody.kotlindefaultthrows") version "${System.getenv("_LOCAL_PLUGIN_VERSION")}"
     alias(libs.plugins.kotlin.cocoapods)
 }
 
@@ -29,7 +29,6 @@ setupBuildLogic {
             }
         }
     }
-
 }
 
 fun Framework.config() {

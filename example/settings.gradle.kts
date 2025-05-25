@@ -1,19 +1,12 @@
 pluginManagement {
-    includeBuild("..")
     includeBuild("../build-logic")
     repositories {
+        maven {
+            url = java.net.URI("file://$rootDir/../build/localmaven")
+        }
         google()
         gradlePluginPortal()
         mavenCentral()
-        mavenLocal()
-    }
-}
-
-dependencyResolutionManagement {
-    versionCatalogs {
-        create("libs") {
-            from(files("../gradle/libs.versions.toml"))
-        }
     }
 }
 
