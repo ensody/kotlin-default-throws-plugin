@@ -2,7 +2,7 @@
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.ensody.kotlindefaultthrows/gradle-plugin/badge.svg?gav=true)](https://maven-badges.herokuapp.com/maven-central/com.ensody.kotlindefaultthrows/gradle-plugin?gav=true)
 
-This Kotlin compiler plugin adds default `@Throws(Throwable::class)` annotations to all `suspend fun` in the whole code.
+This Kotlin compiler plugin adds default `@Throws(Throwable::class)` annotations to every `suspend fun` in your whole code. The reason for this plugin is to **prevent hard-crashing** iOS apps if you forget that annotation.
 
 In other words, it turns this:
 
@@ -22,11 +22,28 @@ suspend fun foo() {
 }
 ```
 
-The reason for this plugin is that for native exports (especially iOS XCFrameworks) any `suspend fun` already requires error handling from Swift/Objective-C. However, if you forget to add an explicit `@Throws` annotation and the `suspend fun` throws any exception other than `CancellationException` your whole app hard-crashes fatally! This is never what you want.
+## More details
 
-With this plugin you can't forget these annotations on `suspend fun`, anymore. You only need to think of adding those annotations to non-suspend functions which are usually far fewer places.
+Note: You only need this plugin if your code gets exported as an XCFramework.
 
-Note: If you add an explicit `@Throws(...)` annotation this plugin won't add the default annotation. So you still have control over the exception type.
+Let's pretend you forget to add `@Throws` on `suspend fun foo()` like in the first example above. This means Kotlin behaves as if the function had `@Throws(CancellationException::class)`. So, only `CancellationException` is allowed and any other exception type **immediately hard-crashes** your iOS app. I'll repeat: **your app gets killed!**
+
+Even worse, for an iOS app integrating your XCFramework it looks like error handling would work:
+
+```swift
+// In Swift: try is needed even if @Throws is missing
+try await foo()
+```
+
+So, an iOS developer wouldn't even notice that something is wrong in the Kotlin code. However, calling that function is dangerous.
+
+If you install this compiler plugin, it annotates every `suspend fun` for you automatically. No need to annotate, anymore.
+
+**IMPORTANT:** You still have to think of adding those annotations to **non-suspend** functions, but that is usually needed in far fewer places.
+
+## Overriding the plugin's default annotation
+
+If you add an explicit `@Throws(...)` annotation to your function, this plugin won't add the default annotation. So you still have control over the exception type.
 
 ## Installation
 
