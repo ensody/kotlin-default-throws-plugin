@@ -26,9 +26,6 @@ fun Project.initBuildLogicBase(block: Project.() -> Unit) {
     buildLogicBaseDeps = BuildLogicBaseDependencies(this)
     version = detectProjectVersion()
     println("Version: $version")
-    subprojects {
-        version = rootProject.version
-    }
 
     // Setup detekt.yml
     val rules = BuildLogicBasePlugin::class.java.module.getResourceAsStream("detekt.yml").reader().readText()
@@ -38,6 +35,7 @@ fun Project.initBuildLogicBase(block: Project.() -> Unit) {
 }
 
 fun Project.setupBuildLogicBase(block: Project.() -> Unit) {
+    version = rootProject.version
     group = (listOf(rootProject.group) + project.path.trimStart(':').split(".").dropLast(1))
         .joinToString(".")
     block()
