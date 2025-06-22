@@ -2,41 +2,30 @@
 
 package com.ensody.buildlogic
 
+import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
-import io.github.gradlenexus.publishplugin.NexusPublishExtension
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import com.vanniktech.maven.publish.SonatypeHost
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.plugins.JavaPlatformExtension
+import org.gradle.api.plugins.catalog.CatalogPluginExtension
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.repositories
+import org.jetbrains.dokka.gradle.DokkaExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinBaseExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import java.net.URI
 
-class BuildLogicPlugin : Plugin<Project> {
-    override fun apply(target: Project) {
-        target.run {
-            pluginManager.apply("com.ensody.build-logic-base")
-            if (rootProject.name == "example") {
-                if (!isRootProject) {
-                    pluginManager.apply("org.jetbrains.kotlin.multiplatform")
-                    pluginManager.apply("io.gitlab.arturbosch.detekt")
-                }
-            } else if (!isRootProject) {
-                pluginManager.apply("org.jetbrains.kotlin.jvm")
-                if ("gradle-plugin" in project.name) {
-                    pluginManager.apply("java-gradle-plugin")
-                }
-                pluginManager.apply("io.gitlab.arturbosch.detekt")
-                pluginManager.apply("maven-publish")
-            }
-        }
-    }
+/** Base setup. */
+class BaseBuildLogicPlugin : Plugin<Project> {
+    override fun apply(target: Project) {}
 }
 
 fun Project.initBuildLogic() {
@@ -58,19 +47,7 @@ fun Project.initBuildLogic() {
         forwardTaskToExampleProject("testAll", "verification")
         forwardTaskToExampleProject("ktlint", "verification")
         forwardTaskToExampleProject("ktlintFormat", "formatting")
-        forwardTaskToExampleProject("forwardDetekt", "other", "detekt")
-        tasks.getByName("detekt").dependsOn("forwardDetekt")
-
-        configure<NexusPublishExtension> {
-            repositories {
-                sonatype {
-                    nexusUrl.set(URI("https://s01.oss.sonatype.org/service/local/"))
-                    snapshotRepositoryUrl.set(URI("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-                    username = System.getenv("PUBLICATION_USERNAME")
-                    password = System.getenv("PUBLICATION_PASSWORD")
-                }
-            }
-        }
+        forwardTaskToExampleProject("detekt", "verification")
     }
 }
 
@@ -80,6 +57,11 @@ fun Project.forwardTaskToExampleProject(
     targetName: String = name,
     block: Task.() -> Unit = {},
 ) {
+    tasks.findByName(name)?.let {
+        forwardTaskToExampleProject("forward$name", group, name, block)
+        it.dependsOn("forward$name")
+        return
+    }
     tasks.register(name) {
         group?.let { this.group = it }
         doLast {
@@ -112,8 +94,17 @@ fun Project.setupRepositories() {
 fun Project.setupBuildLogic(block: Project.() -> Unit) {
     setupBuildLogicBase {
         setupRepositories()
+        if (extensions.findByType<JavaPlatformExtension>() != null) {
+            setupPlatformProject()
+        }
+        if (extensions.findByType<BaseExtension>() != null) {
+            setupAndroid(coreLibraryDesugaring = libs.findLibrary("desugarJdkLibs").get())
+        }
         if (extensions.findByType<KotlinMultiplatformExtension>() != null) {
             setupKmp {
+                androidTarget {
+                    publishLibraryVariants("release")
+                }
                 jvm()
                 allIos()
             }
@@ -128,29 +119,34 @@ fun Project.setupBuildLogic(block: Project.() -> Unit) {
         if (extensions.findByType<DetektExtension>() != null) {
             setupDetekt()
         }
-        if (extensions.findByType<PublishingExtension>() != null) {
-            setupPublication(
-                withJavadocJar = true,
-                withSources = true,
-                signingKeyInfo = SigningKeyInfo.loadFromEnvOrNull(),
-            ) {
-                pom {
-                    description = "Kotlin compiler plugin that adds default @Throws annotations"
-                    url = "https://github.com/ensody/kotlin-default-throws-plugin"
-                    licenses {
-                        apache2()
-                    }
-                    scm {
-                        url.set(this@pom.url)
-                    }
-                    developers {
-                        developer {
-                            id = "wkornewald"
-                            name = "Waldemar Kornewald"
-                            url = "https://www.ensody.com"
-                            organization = "Ensody GmbH"
-                            organizationUrl = url
-                        }
+        if (extensions.findByType<DokkaExtension>() != null) {
+            setupDokka(copyright = "Ensody GmbH")
+        }
+        if (extensions.findByType<CatalogPluginExtension>() != null) {
+            setupVersionCatalog()
+        }
+        extensions.findByType<MavenPublishBaseExtension>()?.apply {
+            publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
+            if (System.getenv("ORG_GRADLE_PROJECT_signingInMemoryKey")?.isNotBlank() == true) {
+                signAllPublications()
+            }
+            pom {
+                description = project.description?.takeIf { it.isNotBlank() }
+                    ?: "Kotlin compiler plugin that adds default @Throws annotations"
+                url = "https://github.com/ensody/kotlin-default-throws-plugin"
+                licenses {
+                    apache2()
+                }
+                scm {
+                    url.set(this@pom.url)
+                }
+                developers {
+                    developer {
+                        id = "wkornewald"
+                        name = "Waldemar Kornewald"
+                        url = "https://www.ensody.com"
+                        organization = "Ensody GmbH"
+                        organizationUrl = url
                     }
                 }
             }

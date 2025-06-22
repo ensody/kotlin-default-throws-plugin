@@ -2,7 +2,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import com.ensody.buildlogic.setupBuildLogic
 
 plugins {
-    id("com.ensody.build-logic")
+    id("com.ensody.build-logic.jvm")
+    id("com.ensody.build-logic.publish")
     kotlin("kapt")
 }
 

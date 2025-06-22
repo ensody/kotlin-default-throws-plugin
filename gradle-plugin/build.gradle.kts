@@ -2,12 +2,13 @@ import com.ensody.buildlogic.setupBuildLogic
 import com.ensody.buildlogic.withGeneratedBuildFile
 
 plugins {
-    id("com.ensody.build-logic")
+    id("com.ensody.build-logic.gradle")
+    id("com.ensody.build-logic.publish")
 }
 
 setupBuildLogic {
     dependencies {
-        implementation(libs.kotlin.gradle)
+        implementation(libs.gradle.kotlin)
     }
 
     gradlePlugin {

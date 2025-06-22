@@ -2,9 +2,9 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import com.ensody.buildlogic.setupBuildLogic
 
 plugins {
-    id("com.ensody.build-logic")
+    id("com.ensody.build-logic.kmp")
+    id("com.ensody.build-logic.cocoapods")
     id("com.ensody.kotlindefaultthrows") version "${System.getenv("_LOCAL_PLUGIN_VERSION")}"
-    alias(libs.plugins.kotlin.cocoapods)
 }
 
 setupBuildLogic {

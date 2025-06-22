@@ -1,11 +1,8 @@
 import com.ensody.buildlogic.initBuildLogic
-import org.gradle.kotlin.dsl.libs
 
 plugins {
-    id("com.ensody.build-logic")
-    alias(libs.plugins.kotlin.jvm) apply false
-    alias(libs.plugins.nexusPublish)
-    alias(libs.plugins.detekt)
+    id("com.ensody.build-logic.base")
+    id("com.ensody.build-logic.dokka")
 }
 
 // Needed for debugging
