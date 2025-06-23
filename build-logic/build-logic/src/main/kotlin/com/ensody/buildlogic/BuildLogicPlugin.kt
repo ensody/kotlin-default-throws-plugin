@@ -102,9 +102,6 @@ fun Project.setupBuildLogic(block: Project.() -> Unit) {
         }
         if (extensions.findByType<KotlinMultiplatformExtension>() != null) {
             setupKmp {
-                androidTarget {
-                    publishLibraryVariants("release")
-                }
                 jvm()
                 allIos()
             }
@@ -131,6 +128,7 @@ fun Project.setupBuildLogic(block: Project.() -> Unit) {
                 signAllPublications()
             }
             pom {
+                name = "${rootProject.name}: ${project.name}"
                 description = project.description?.takeIf { it.isNotBlank() }
                     ?: "Kotlin compiler plugin that adds default @Throws annotations"
                 url = "https://github.com/ensody/kotlin-default-throws-plugin"

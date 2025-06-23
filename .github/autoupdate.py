@@ -57,6 +57,7 @@ def main():
                 traceback.print_exc()
                 errors.append(e)
                 print("")
+                continue
 
             # Pushing a new tag will start a real publication in a separate CI workflow
             shell(f"git add {VERSIONS_PATH}")
