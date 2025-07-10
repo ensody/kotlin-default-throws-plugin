@@ -38,9 +38,6 @@ fun Project.initBuildLogic() {
 
         forwardTaskToNestedProject("example", "assemble", "build") {
             doFirst {
-                val versions = rootProject.file("gradle/libs.versions.toml").readText()
-                val bumpVersions = Regex("""(?<=^gradlePluginKotlin = ").*(?>=")$""").replace(versions, libs.findVersion("kotlin").get().toString())
-                rootProject.file("example/gradle/libs.versions.toml").writeTextIfDifferent(bumpVersions)
                 shell("./gradlew --no-daemon publishAllPublicationsToLocalMavenRepository", inheritIO = true)
             }
         }
@@ -134,7 +131,7 @@ fun Project.setupBuildLogic(block: Project.() -> Unit) {
             setupVersionCatalog()
         }
         extensions.findByType<MavenPublishBaseExtension>()?.apply {
-            configureBasedOnAppliedPlugins(sourcesJar = true, javadocJar = false)
+            configureBasedOnAppliedPlugins(sourcesJar = true, javadocJar = System.getenv("RUNNING_ON_CI") == "true")
             publishToMavenCentral(automaticRelease = true)
             if (System.getenv("ORG_GRADLE_PROJECT_signingInMemoryKey")?.isNotBlank() == true) {
                 signAllPublications()
