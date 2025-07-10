@@ -3,7 +3,6 @@
 package com.ensody.buildlogic
 
 import com.android.build.gradle.BaseExtension
-import com.android.build.gradle.internal.cxx.io.writeTextIfDifferent
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension

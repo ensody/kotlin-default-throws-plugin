@@ -70,7 +70,7 @@ fun Project.setupBuildLogic(block: Project.() -> Unit) {
             setupVersionCatalog()
         }
         extensions.findByType<MavenPublishBaseExtension>()?.apply {
-            configureBasedOnAppliedPlugins(sourcesJar = true, javadocJar = false)
+            configureBasedOnAppliedPlugins(sourcesJar = true, javadocJar = System.getenv("RUNNING_ON_CI") == "true")
             publishToMavenCentral(automaticRelease = true)
             if (System.getenv("ORG_GRADLE_PROJECT_signingInMemoryKey")?.isNotBlank() == true) {
                 signAllPublications()
