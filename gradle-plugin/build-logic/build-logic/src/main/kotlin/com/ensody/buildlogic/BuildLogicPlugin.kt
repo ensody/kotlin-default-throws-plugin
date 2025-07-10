@@ -50,11 +50,10 @@ fun Project.setupBuildLogic(block: Project.() -> Unit) {
         }
         if (extensions.findByType<KotlinMultiplatformExtension>() != null) {
             setupKmp {
-                androidTarget()
                 jvm()
-                allIos()
+                allIos(x64 = false)
             }
-            tasks.register("testAll").dependsOn("testDebugUnitTest")
+            tasks.register("testAll").dependsOn("jvmTest")
         }
         setupKtLint(libs.findLibrary("ktlint-cli").get())
         if (extensions.findByType<KotlinJvmProjectExtension>() != null) {
