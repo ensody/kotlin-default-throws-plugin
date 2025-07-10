@@ -1,7 +1,7 @@
+enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
+
 pluginManagement {
     includeBuild("build-logic")
-    includeBuild("gradle-plugin")
-
     repositories {
         google()
         gradlePluginPortal()
@@ -9,4 +9,6 @@ pluginManagement {
     }
 }
 
-include(":compiler-plugin")
+rootProject.name = "gradle-plugin-root"
+
+include(":gradle-plugin")

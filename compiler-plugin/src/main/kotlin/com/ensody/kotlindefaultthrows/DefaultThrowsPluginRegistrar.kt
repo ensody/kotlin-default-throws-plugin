@@ -87,9 +87,7 @@ internal class ElementTransformer(
             }
             arguments[0] = builder.irVararg(elementType = classRef.type, values = listOf(classRef))
         }
-        // TODO: Replace with commented out line when bumping to Kotlin 2.2.0: https://youtrack.jetbrains.com/issue/KT-76257/Annotations-with-class-references-are-not-supported-when-marking-IR-declarations-as-visible-to-metadata
-        declaration.annotations += annotation
-//        context.metadataDeclarationRegistrar.addMetadataVisibleAnnotationsToElement(declaration, annotation)
+        context.metadataDeclarationRegistrar.addMetadataVisibleAnnotationsToElement(declaration, annotation)
         return declaration
     }
 }

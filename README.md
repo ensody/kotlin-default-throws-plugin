@@ -1,6 +1,6 @@
 # kotlin-default-throws-plugin
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.ensody.kotlindefaultthrows/gradle-plugin/badge.svg?gav=true)](https://maven-badges.herokuapp.com/maven-central/com.ensody.kotlindefaultthrows/gradle-plugin?gav=true)
+[![Maven Central](https://img.shields.io/maven-central/v/com.ensody.kotlindefaultthrows/gradle-plugin?color=%2345cf00)](https://central.sonatype.com/artifact/com.ensody.kotlindefaultthrows/gradle-plugin)
 
 This Kotlin compiler plugin adds default `@Throws(Throwable::class)` annotations to every `suspend fun` in your whole code. The reason for this plugin is to **prevent hard-crashing** iOS apps if you forget that annotation.
 

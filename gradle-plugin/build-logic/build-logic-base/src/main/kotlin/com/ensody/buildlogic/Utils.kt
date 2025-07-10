@@ -4,7 +4,7 @@ import com.android.build.gradle.internal.cxx.io.writeTextIfDifferent
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.get
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import java.io.File
 
@@ -32,7 +32,7 @@ fun shell(
 
 fun Project.withGeneratedBuildFile(category: String, path: String, sourceSet: String? = null, content: () -> String) {
     val generatedDir = file("${getGeneratedBuildFilesRoot()}/$category")
-    extensions.findByType<KotlinJvmExtension>()?.apply {
+    extensions.findByType<KotlinJvmProjectExtension>()?.apply {
         sourceSets[sourceSet ?: "main"].kotlin.srcDir(generatedDir)
     } ?: extensions.findByType<KotlinMultiplatformExtension>()?.apply {
         sourceSets[sourceSet ?: "commonMain"].kotlin.srcDir(generatedDir)

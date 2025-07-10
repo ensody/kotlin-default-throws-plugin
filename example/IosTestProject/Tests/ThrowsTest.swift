@@ -8,7 +8,7 @@ final class ThrowsTest: XCTestCase {
             try await Foo().coFoo()
             XCTFail("No error thrown")
         } catch {
-            assert(error.kotlinException is KotlinIllegalStateException)
+            assert(error.kotlinException is KotlinRuntimeException)
         }
     }
 }

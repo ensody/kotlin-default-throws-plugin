@@ -1,4 +1,5 @@
 pluginManagement {
+    includeBuild("build-logic-inner")
     includeBuild("../build-logic")
     repositories {
         maven {
