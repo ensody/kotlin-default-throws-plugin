@@ -11,11 +11,11 @@ version_re = re.compile(r'^(kotlin = ")(.*)(")', re.MULTILINE)
 shell_extra_env = {}
 
 def shell(*args, **kwargs):
-    kwargs["env"] = dict(kwargs.get("env") or {}, **shell_extra_env)
+    kwargs["env"] = dict(kwargs.get("env") or os.environ, **shell_extra_env)
     return check_call(*args, shell=True, **kwargs)
 
 def shell_output(*args, **kwargs):
-    kwargs["env"] = dict(kwargs.get("env") or {}, **shell_extra_env)
+    kwargs["env"] = dict(kwargs.get("env") or os.environ, **shell_extra_env)
     return check_output(*args, shell=True, **kwargs).decode()
 
 def request_json(url: str):
