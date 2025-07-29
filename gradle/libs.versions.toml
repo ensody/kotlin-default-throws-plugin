@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.2.0"
+kotlin = "2.2.20-Beta2"
 autoService = "1.1.1"
 
 [libraries]
