@@ -29,6 +29,7 @@ import org.jetbrains.kotlin.name.StandardClassIds
 
 @AutoService(CompilerPluginRegistrar::class)
 public class DefaultThrowsPluginRegistrar : CompilerPluginRegistrar() {
+    override val pluginId: String = "com.ensody.kotlindefaultthrows"
 
     override val supportsK2: Boolean = true
 
