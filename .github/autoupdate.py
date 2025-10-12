@@ -38,14 +38,14 @@ def main():
         if not has_version(kotlin_version, all_versions):
             is_stable = is_stable_version(kotlin_version)
             # shell("git switch origin/main -C main")
-            kotlin_versions_with_plugin = set(version.rsplit("-plugin.", 1)[0] for version in all_versions)
+            kotlin_versions_with_plugin = set(version.rsplit(".", 1)[0] for version in all_versions)
             if not is_stable or \
                 any(tuple(version.split(".")) > tuple(kotlin_version.split("."))
                     for version in kotlin_versions_with_plugin if is_stable_version(version)):
                 shell("git switch --detach")
             set_kotlin_version(kotlin_version)
-            latest_version = get_latest_version().rsplit("-plugin.", 1)[1]
-            plugin_version = f"{kotlin_version}-plugin.{latest_version}"
+            latest_version = get_latest_version().rsplit(".", 1)[1]
+            plugin_version = f"{kotlin_version}.{latest_version}"
             shell_extra_env["OVERRIDE_VERSION"] = plugin_version
             try:
                 shell(f"./gradlew assemble --stacktrace")
@@ -76,7 +76,7 @@ def main():
 
 
 def has_version(kotlin_version: str, all_versions: List[str]) -> bool:
-    return any(version.startswith(f"{kotlin_version}-plugin.") for version in all_versions)
+    return any(version.startswith(f"{kotlin_version}.") for version in all_versions)
 
 def is_stable_version(version: str) -> bool:
     return "-" not in version and "+" not in version
