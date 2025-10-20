@@ -27,8 +27,15 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.StandardClassIds
 
+/** Compatibility interface for supporting old and new Kotlin versions with the same code. */
+public interface DefaultThrowsPluginRegistrarCompat {
+    // TODO: Remove this once we switch to Kotlin >=2.3
+    public val pluginId: String
+}
+
 @AutoService(CompilerPluginRegistrar::class)
-public class DefaultThrowsPluginRegistrar : CompilerPluginRegistrar() {
+public class DefaultThrowsPluginRegistrar : CompilerPluginRegistrar(), DefaultThrowsPluginRegistrarCompat {
+    override val pluginId: String = "com.ensody.kotlindefaultthrows"
 
     override val supportsK2: Boolean = true
 
