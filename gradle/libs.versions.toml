@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.2.21-RC"
+kotlin = "2.2.21"
 autoService = "1.1.1"
 
 [libraries]
