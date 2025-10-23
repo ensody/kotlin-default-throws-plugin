@@ -84,5 +84,5 @@ private class VersionComparable(val parts: List<String>) : Comparable<VersionCom
 private fun sanitizeBranchName(name: String): String =
     sanitizeRegex.replace(name, "-")
 
-private val versionRegex = Regex("""v-?(\d+)\.(\d+)\.(\d+)((-.+?\.)(\d+))*""")
+private val versionRegex = Regex("""v-?(\d+)\.(\d+)\.(\d+)(((?:-.+?)?\.)(\d+))*""")
 private val sanitizeRegex = Regex("""[^A-Za-z0-9\-]""")
