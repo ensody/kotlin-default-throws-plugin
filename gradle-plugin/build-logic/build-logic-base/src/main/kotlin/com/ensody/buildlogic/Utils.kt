@@ -68,7 +68,7 @@ internal fun Project.detectProjectVersion(): String =
             VersionComparable(versionRegex.matchEntire(it)!!.destructured.toList())
         }?.removePrefix("v")?.removePrefix("-") ?: run {
             val branchName = shell("git rev-parse --abbrev-ref HEAD")
-            "999999.0.0-${sanitizeBranchName(branchName)}.1"
+            "0.0.1-${sanitizeBranchName(branchName)}.1"
         }
 
 private class VersionComparable(val parts: List<String>) : Comparable<VersionComparable> {
