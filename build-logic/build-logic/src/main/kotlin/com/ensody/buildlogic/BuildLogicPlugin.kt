@@ -2,7 +2,6 @@
 
 package com.ensody.buildlogic
 
-import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
@@ -13,13 +12,14 @@ import org.gradle.api.plugins.JavaPlatformExtension
 import org.gradle.api.plugins.catalog.CatalogPluginExtension
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.kotlin.dsl.assign
-import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.repositories
+import org.gradle.plugin.devel.GradlePluginDevelopmentExtension
 import org.jetbrains.dokka.gradle.DokkaExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinBaseExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import java.io.File
 import java.net.URI
 
 /** Base setup. */
@@ -41,18 +41,12 @@ fun Project.initBuildLogic() {
             }
         }
         forwardTaskToNestedProject("example", "check", "verification")
-        forwardTaskToNestedProject("gradle-plugin", "check", "verification")
         forwardTaskToNestedProject("example", "test", "verification")
         forwardTaskToNestedProject("example", "allTests", "verification")
         forwardTaskToNestedProject("example", "testAll", "verification")
         forwardTaskToNestedProject("example", "ktlint", "verification")
-        forwardTaskToNestedProject("gradle-plugin", "ktlint", "verification")
         forwardTaskToNestedProject("example", "ktlintFormat", "formatting")
-        forwardTaskToNestedProject("gradle-plugin", "ktlintFormat", "formatting")
         forwardTaskToNestedProject("example", "detekt", "verification")
-        forwardTaskToNestedProject("gradle-plugin", "detekt", "verification")
-        forwardTaskToNestedProject("gradle-plugin", "publishAllPublicationsToLocalMavenRepository", "publication")
-        forwardTaskToNestedProject("gradle-plugin", "publishToMavenCentral", "publication")
     }
 }
 
@@ -103,19 +97,15 @@ fun Project.setupBuildLogic(block: Project.() -> Unit) {
         if (extensions.findByType<JavaPlatformExtension>() != null) {
             setupPlatformProject()
         }
-        if (extensions.findByType<BaseExtension>() != null) {
-            setupAndroid(coreLibraryDesugaring = libs.findLibrary("desugarJdkLibs").get())
-        }
         if (extensions.findByType<KotlinMultiplatformExtension>() != null) {
             setupKmp {
-                androidTarget()
                 jvm()
                 allIos()
             }
-            tasks.register("testAll").dependsOn("testDebugUnitTest")
+            tasks.register("testAll").dependsOn("jvmTest")
         }
         if (extensions.findByType<KotlinBaseExtension>() != null) {
-            setupKtLint(libs.findLibrary("ktlint-cli").get())
+            setupKtLint(rootLibs.findLibrary("ktlint-cli").get())
         }
         if (extensions.findByType<KotlinJvmExtension>() != null) {
             setupKotlinJvm()
@@ -128,6 +118,9 @@ fun Project.setupBuildLogic(block: Project.() -> Unit) {
         }
         if (extensions.findByType<CatalogPluginExtension>() != null) {
             setupVersionCatalog()
+        }
+        if (extensions.findByType<GradlePluginDevelopmentExtension>() != null) {
+            setupGradlePlugin(rootLibs.findVersion("kotlinForGradlePlugins").get().toString())
         }
         extensions.findByType<MavenPublishBaseExtension>()?.apply {
             configureBasedOnAppliedPlugins(sourcesJar = true, javadocJar = System.getenv("RUNNING_ON_CI") == "true")
@@ -156,13 +149,13 @@ fun Project.setupBuildLogic(block: Project.() -> Unit) {
                     }
                 }
             }
-            configure<PublishingExtension> {
-                // Local publication for the example project
-                repositories {
-                    maven {
-                        name = "localMaven"
-                        url = URI("file://$rootDir/build/localmaven")
-                    }
+        }
+        extensions.findByType<PublishingExtension>()?.apply {
+            repositories {
+                maven {
+                    name = "localMaven"
+                    val outputDir = File(rootDir, "build/localmaven")
+                    url = outputDir.toURI()
                 }
             }
         }
