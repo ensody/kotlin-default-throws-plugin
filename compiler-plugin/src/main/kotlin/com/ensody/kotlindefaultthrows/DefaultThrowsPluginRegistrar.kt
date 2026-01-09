@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.builders.irCallConstructor
 import org.jetbrains.kotlin.ir.builders.irVararg
+import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.kotlin.ir.interpreter.hasAnnotation
@@ -80,6 +81,7 @@ internal class ElementTransformer(
     override fun visitFunctionNew(declaration: IrFunction): IrStatement {
         if (!declaration.isSuspend ||
             declaration.isFakeOverride ||
+            declaration.origin == IrDeclarationOrigin.LOCAL_FUNCTION_FOR_LAMBDA ||
             declaration.hasAnnotation(throwsFqName) ||
             declaration.hasAnnotation(jvmThrowsFqName)
         ) {
