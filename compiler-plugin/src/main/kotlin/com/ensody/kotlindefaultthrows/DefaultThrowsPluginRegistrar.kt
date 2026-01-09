@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
+import org.jetbrains.kotlin.backend.jvm.ir.isInvokeSuspendOfLambda
 import org.jetbrains.kotlin.backend.jvm.ir.kClassReference
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
@@ -69,8 +70,8 @@ internal class ElementTransformer(
     val jvmThrowsFqName = FqName("kotlin.jvm.Throws")
     val throwsClassId = ClassId(StandardClassIds.BASE_KOTLIN_PACKAGE, Name.identifier("Throws"))
     val jvmThrowsClassId = ClassId(StandardClassIds.BASE_JVM_PACKAGE, Name.identifier("Throws"))
-    val throwsClass: IrClassSymbol = context.referenceClass(throwsClassId)
-        ?: context.referenceClass(jvmThrowsClassId)
+    val throwsClass: IrClassSymbol = context.finderForBuiltins().findClass(throwsClassId)
+        ?: context.finderForBuiltins().findClass(jvmThrowsClassId)
         ?: error("Throws class not found")
     val throwsConstructor = throwsClass.constructors.single()
 
@@ -80,6 +81,7 @@ internal class ElementTransformer(
     override fun visitFunctionNew(declaration: IrFunction): IrStatement {
         if (!declaration.isSuspend ||
             declaration.isFakeOverride ||
+            declaration.isInvokeSuspendOfLambda() ||
             declaration.hasAnnotation(throwsFqName) ||
             declaration.hasAnnotation(jvmThrowsFqName)
         ) {
