@@ -20,3 +20,5 @@ kotlin-js-store
 *.xcodeproj
 *.xcworkspace
 Pods
+
+/.releases.json

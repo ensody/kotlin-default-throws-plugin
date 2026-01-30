@@ -1,6 +1,6 @@
 from pathlib import Path
 from subprocess import check_output, check_call
-from typing import List
+from typing import List, Tuple, Optional
 from urllib.request import urlopen, Request
 import os, re, json
 
@@ -9,6 +9,13 @@ VERSIONS_PATH = ROOT / "gradle" / "libs.versions.toml"
 version_re = re.compile(r'^(kotlin = ")(.*)(")', re.MULTILINE)
 
 shell_extra_env = {}
+
+def split_base_kotlin_version(version: str) -> Tuple[str, Optional[str]]:
+    # Check if new MAJOR.MINOR.PATCH_BUILD or old MAJOR.MINOR.PATH.BUILD tag format
+    separator = "_" if version.rfind("_") > version.rfind(".") else "."
+    # Even older tag format with -plugin. suffix
+    separator = "-plugin." if 0 <= version.rfind("-plugin.") < version.rfind(separator) else separator
+    return version.rsplit(separator, 1) if version.rsplit(separator, 1)[0].count(".") >= 2 else (version, None)
 
 def shell(*args, **kwargs):
     kwargs["env"] = dict(kwargs.get("env") or os.environ, **shell_extra_env)
@@ -30,6 +37,15 @@ def get_kotlin_version(json_data) -> str:
     result = get_version_from_tag(json_data["tag_name"])
     assert result
     return result
+
+def has_version(kotlin_version: str, all_versions: List[str]) -> bool:
+    return any(matches_kotlin_version(kotlin_version, version) for version in all_versions)
+
+def matches_kotlin_version(kotlin_version: str, version: str) -> bool:
+    return version.startswith((f"{kotlin_version}.", f"{kotlin_version}_"))
+
+def is_stable_version(version: str) -> bool:
+    return "-" not in version and "+" not in version and "_" not in version
 
 def get_version_from_tag(tag: str) -> str:
     return tag.lstrip("v-")
