@@ -46,6 +46,9 @@ def main():
     for release in reversed(releases):
         kotlin_version = get_kotlin_version(release)
         if not has_version(kotlin_version, all_versions):
+            latest_supported_kotlin_version = get_stable_kotlin_version(split_base_kotlin_version(all_versions[-1])[0])
+            base_stable_kotlin_version = get_stable_kotlin_version(kotlin_version)
+
             # Take the very latest plugin version and the latest plugin version which came before the given Kotlin
             # version. Try building against both and take the first working version.
             # Imagine we have the plugin versions v-2.3.0_1 and v-2.3.20-Beta_1 tagged in the repo.
@@ -53,26 +56,44 @@ def main():
             # If Kotlin 2.3.10-Beta gets released afterwards we'll build a new release starting from the revision
             # v-2.3.20-Beta_1, but the breaking API change is not included in 2.3.10-Beta, so the build will fail.
             # Next, we try building from revision v-2.3.0_1 which should be API-compatible with the 2.3.10 series.
-            base_versions = all_versions[-1:]
-            base_versions += [version for version in all_versions
-                              if gradle_version_key(split_base_kotlin_version(version)[0]) < gradle_version_key(kotlin_version)][-1:]
+            base_versions = ["origin/main"]
+            has_release_branch = False
+            try:
+                shell_output(f"git rev-parse --verify release/{base_stable_kotlin_version}")
+                has_release_branch = True
+            except:
+                if gradle_version_key(base_stable_kotlin_version) < gradle_version_key(latest_supported_kotlin_version):
+                    base_versions += [version for version in all_versions
+                                    if gradle_version_key(split_base_kotlin_version(version)[0]) < gradle_version_key(kotlin_version)][-1:]
+
+            base_versions = distinct(base_versions)
             sub_errors = []
             for base_version in base_versions:
-                plugin_version = kotlin_version
-                shell(f"git reset --hard")
-                shell(f"git clean --ffdx")
+                plugin_version = f"{kotlin_version}_1"
                 print(f"base_version = {base_version}")
                 print(f"plugin_version = {plugin_version}")
                 print(f"set_kotlin_version({kotlin_version})")
+
+                shell(f"git reset --hard")
+
+                # The latest version is always pushed on main.
+                # Any older versions are maintained on release/<base_stable_kotlin_version>.
+                if has_release_branch:
+                    shell(f"git switch release/{base_stable_kotlin_version}")
+                else:
+                    if gradle_version_key(base_stable_kotlin_version) >= gradle_version_key(latest_supported_kotlin_version):
+                        shell(f"git switch main")
+                    else:
+                        shell(f"git switch -C release/{base_stable_kotlin_version} {base_version}")
                 set_kotlin_version(kotlin_version)
                 shell_extra_env["OVERRIDE_VERSION"] = plugin_version
                 try:
                     shell(f"./gradlew assemble --stacktrace")
                     shell(f"./gradlew testAll --stacktrace")
                 except KeyboardInterrupt:
-                    pass
+                    raise
                 except Exception as e:
-                    print(f"Error building for version {kotlin_version} from plugin version {base_version}:")
+                    print(f"E: Error building for version {kotlin_version} from plugin version {base_version}:")
                     traceback.print_exc()
                     sub_errors.append(e)
                     print("")
@@ -84,15 +105,15 @@ def main():
                 git_tag(f"v-{plugin_version}")
                 all_versions.append(plugin_version)
 
-                if is_stable:
-                    git_push()
-                else:
-                    # Preview releases and old stable releases don't get pushed on main
-                    git_push(tags_only=True)
+                git_push()
+
                 # Success! We can exit the loop and ignore any sub_errors (don't make the CI fail).
                 break
             else:
-                # Building has failed for all potential base versions
+                print(f"E: Building has failed for all potential base versions of {kotlin_version}")
+                if not has_release_branch:
+                    shell("git switch --detach")
+                    shell_output(f"git branch -D release/{base_stable_kotlin_version} || true")
                 errors += sub_errors
 
     if errors:

@@ -2,6 +2,7 @@ from pathlib import Path
 from subprocess import check_output, check_call
 from typing import List, Tuple, Optional
 from urllib.request import urlopen, Request
+from collections import OrderedDict
 import os, re, json
 
 ROOT = Path(__file__).parent.parent
@@ -9,6 +10,9 @@ VERSIONS_PATH = ROOT / "gradle" / "libs.versions.toml"
 version_re = re.compile(r'^(kotlin = ")(.*)(")', re.MULTILINE)
 
 shell_extra_env = {}
+
+def get_stable_kotlin_version(version: str) -> str:
+    return version.split("-", 1)[0]
 
 def split_base_kotlin_version(version: str) -> Tuple[str, Optional[str]]:
     # Check if new MAJOR.MINOR.PATCH_BUILD or old MAJOR.MINOR.PATH.BUILD tag format
@@ -67,7 +71,10 @@ def commit(message: str, all_files: bool = True):
 def git_tag(name: str):
     shell(f"git tag '{name}'")
 
-def git_push(tags_only: bool = False):
+def git_push(tags_only: bool = False, force: bool = False):
     if not tags_only:
         shell(f"git push")
     shell(f"git push --tags")
+
+def distinct(lst: List) -> List:
+    return list(OrderedDict.fromkeys(base_version))
