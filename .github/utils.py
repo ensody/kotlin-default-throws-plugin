@@ -3,6 +3,7 @@ from subprocess import check_output, check_call
 from typing import List, Tuple, Optional
 from urllib.request import urlopen, Request
 from collections import OrderedDict
+from gradle_versioning import *
 import os, re, json
 
 ROOT = Path(__file__).parent.parent
@@ -58,7 +59,9 @@ def set_kotlin_version(kotlin_version: str):
     VERSIONS_PATH.write_text(version_re.sub(f"\\g<1>{kotlin_version}\\g<3>", VERSIONS_PATH.read_text()))
 
 def get_all_versions() -> List[str]:
-    return [get_version_from_tag(tag) for tag in shell_output(f"git tag --list 'v-*'").strip().splitlines()]
+    versions = [get_version_from_tag(tag) for tag in shell_output(f"git tag --list 'v-*'").strip().splitlines()]
+    versions.sort(key=lambda x: gradle_version_key(x))
+    return versions
 
 def get_latest_version() -> str:
     return get_version_from_tag(shell_output(f"git describe --tags --abbrev=0 --match 'v-*'").strip())
@@ -73,8 +76,8 @@ def git_tag(name: str):
 
 def git_push(tags_only: bool = False, force: bool = False):
     if not tags_only:
-        shell(f"git push")
+        shell(f"git push origin HEAD")
     shell(f"git push --tags")
 
 def distinct(lst: List) -> List:
-    return list(OrderedDict.fromkeys(base_version))
+    return list(OrderedDict.fromkeys(lst))
