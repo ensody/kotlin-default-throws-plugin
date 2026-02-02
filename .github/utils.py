@@ -24,10 +24,12 @@ def split_base_kotlin_version(version: str) -> Tuple[str, Optional[str]]:
 
 def shell(*args, **kwargs):
     kwargs["env"] = dict(kwargs.get("env") or os.environ, **shell_extra_env)
+    print(args[0])
     return check_call(*args, shell=True, **kwargs)
 
 def shell_output(*args, **kwargs):
     kwargs["env"] = dict(kwargs.get("env") or os.environ, **shell_extra_env)
+    print(args[0])
     return check_output(*args, shell=True, **kwargs).decode()
 
 def request_json(url: str):

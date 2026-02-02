@@ -1,7 +1,8 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3 -u
 from utils import *
 from gradle_versioning import *
 from typing import List, Tuple
+import subprocess
 import sys
 import traceback
 
@@ -63,7 +64,7 @@ def main():
             base_versions = ["origin/main"]
             has_release_branch = False
             try:
-                shell_output(f"git rev-parse --verify release/{base_stable_kotlin_version}")
+                shell_output(f"git rev-parse --verify release/{base_stable_kotlin_version}", stderr=subprocess.STDOUT)
                 has_release_branch = True
             except:
                 if gradle_version_key(base_stable_kotlin_version) < gradle_version_key(latest_supported_kotlin_version):
