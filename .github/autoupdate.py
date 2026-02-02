@@ -67,8 +67,8 @@ def main():
                 has_release_branch = True
             except:
                 if gradle_version_key(base_stable_kotlin_version) < gradle_version_key(latest_supported_kotlin_version):
-                    base_versions += [version for version in all_versions
-                                    if gradle_version_key(split_base_kotlin_version(version)[0]) < gradle_version_key(kotlin_version)][-1:]
+                    base_versions += [f"v-{version}" for version in all_versions
+                                      if gradle_version_key(split_base_kotlin_version(version)[0]) < gradle_version_key(kotlin_version)][-1:]
 
             base_versions = distinct(base_versions)
             sub_errors = []
@@ -94,9 +94,8 @@ def main():
                 shell_extra_env["OVERRIDE_VERSION"] = plugin_version
 
                 try:
-                    # shell(f"./gradlew assemble --stacktrace")
-                    # shell(f"./gradlew testAll --stacktrace")
-                    pass
+                    shell(f"./gradlew assemble --stacktrace")
+                    shell(f"./gradlew testAll --stacktrace")
                 except KeyboardInterrupt:
                     raise
                 except Exception as e:
