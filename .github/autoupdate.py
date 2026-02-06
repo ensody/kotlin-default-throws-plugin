@@ -64,7 +64,7 @@ def main():
             base_versions = ["origin/main"]
             has_release_branch = False
             try:
-                shell_output(f"git rev-parse --verify release/{base_stable_kotlin_version}", stderr=subprocess.STDOUT)
+                shell_output(f"git rev-parse --verify origin/release/{base_stable_kotlin_version}", stderr=subprocess.STDOUT)
                 has_release_branch = True
             except:
                 if gradle_version_key(base_stable_kotlin_version) < gradle_version_key(latest_supported_kotlin_version):
