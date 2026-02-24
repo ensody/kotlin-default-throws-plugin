@@ -96,8 +96,8 @@ fun Project.detectProjectVersion(): String =
         ?: runCatching { cli("git", "tag", "--points-at", "HEAD") }.getOrNull()?.split("\n")?.filter {
             versionRegex.matchEntire(it) != null
         }?.maxByOrNull {
-            VersionComparable(versionRegex.matchEntire(it)!!.destructured.toList())
-        }?.removePrefix("v")?.removePrefix("-")?.takeIf { System.getenv("RUNNING_ON_CI") == "true" }
+            VersionComparable(versionPartsRegex.findAll(it).map { it.value }.toList())
+        }?.takeIf { System.getenv("RUNNING_ON_CI") == "true" }
         ?: run {
             "0.0.1-local.1"
         }
@@ -150,5 +150,6 @@ private class VersionComparable(val parts: List<String>) : Comparable<VersionCom
 private fun sanitizeBranchName(name: String): String =
     sanitizeRegex.replace(name, "-")
 
-private val versionRegex = Regex("""v-?(\d+)\.(\d+)\.(\d+)(((?:-.+?)?\.|_)(\d+))*""")
+private val versionRegex = Regex("""v-?(\d+)\.(\d+)\.(\d+)(.*)""")
+private val versionPartsRegex = Regex("""[0-9]+|[a-zA-Z]+""")
 private val sanitizeRegex = Regex("""[^A-Za-z0-9\-]""")
