@@ -92,12 +92,12 @@ fun Project.getGeneratedBuildFilesRoot(): File =
     file("$projectDir/build/generated/source/build-logic")
 
 fun Project.detectProjectVersion(): String =
-    System.getenv("OVERRIDE_VERSION")?.removePrefix("v")?.removePrefix("-")?.takeIf { it.isNotBlank() }
+    System.getenv("OVERRIDE_VERSION")?.takeIf { it.isNotBlank() }
         ?: runCatching { cli("git", "tag", "--points-at", "HEAD") }.getOrNull()?.split("\n")?.filter {
             versionRegex.matchEntire(it) != null
         }?.maxByOrNull {
             VersionComparable(versionPartsRegex.findAll(it).map { it.value }.toList())
-        }?.takeIf { System.getenv("RUNNING_ON_CI") == "true" }
+        }?.removePrefix("v")?.removePrefix("-")?.takeIf { System.getenv("RUNNING_ON_CI") == "true" }
         ?: run {
             "0.0.1-local.1"
         }
