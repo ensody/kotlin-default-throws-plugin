@@ -109,7 +109,7 @@ def main():
                 # Pushing a new tag will start a real publication in a separate CI workflow
                 shell(f"git add {VERSIONS_PATH}")
                 if shell_output("git status --porcelain").strip():
-                    commit(f"Bumped to Kotlin {kotlin_version}", all_files=False)
+                    commit(f"Bump to Kotlin {kotlin_version}", all_files=False)
                 git_tag(f"v-{plugin_version}")
                 git_push()
 

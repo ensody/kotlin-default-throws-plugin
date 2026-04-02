@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.3.20"
+kotlin = "2.4.0-Beta1"
 kotlinForGradlePlugins = "2.1.0"
 autoService = "1.1.1"
 
@@ -17,7 +17,7 @@ google-autoservice = { module = "com.google.auto.service:auto-service", version.
 gradle-android = { module = "com.android.tools.build:gradle", version = "8.13.0" }
 gradle-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 gradle-cocoapods = { module = "org.jetbrains.kotlin.native.cocoapods:org.jetbrains.kotlin.native.cocoapods.gradle.plugin", version.ref = "kotlin" }
-gradle-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version = "2.1.0-Beta" }
+gradle-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version = "2.1.0" }
 gradle-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version = "1.23.8" }
 gradle-kotlin-compose = { module = "org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin", version.ref = "kotlin" }
 gradle-jetbrains-compose = { module = "org.jetbrains.compose:org.jetbrains.compose.gradle.plugin", version = "1.9.0" }

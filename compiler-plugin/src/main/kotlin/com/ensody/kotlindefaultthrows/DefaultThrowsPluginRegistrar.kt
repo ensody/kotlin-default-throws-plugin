@@ -5,14 +5,13 @@ import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
-import org.jetbrains.kotlin.backend.jvm.ir.isInvokeSuspendOfLambda
 import org.jetbrains.kotlin.backend.jvm.ir.kClassReference
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.ir.IrStatement
-import org.jetbrains.kotlin.ir.builders.irCallConstructor
+import org.jetbrains.kotlin.ir.builders.irAnnotation
 import org.jetbrains.kotlin.ir.builders.irVararg
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrFunction
@@ -89,7 +88,7 @@ internal class ElementTransformer(
             return super.visitFunctionNew(declaration)
         }
         val builder = DeclarationIrBuilder(context, declaration.symbol)
-        val annotation = builder.irCallConstructor(throwsConstructor, emptyList()).apply {
+        val annotation = builder.irAnnotation(throwsConstructor, emptyList()).apply {
             val classType = throwableClass.defaultType
             val classRef = builder.kClassReference(classType).apply {
                 symbol = throwableClass
