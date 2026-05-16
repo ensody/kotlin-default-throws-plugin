@@ -65,7 +65,6 @@ fun Project.setupKmp(
 
 val commonKotlinCompilerArgs = listOf(
     "-Xexpect-actual-classes",
-    "-Xannotation-default-target=param-property",
 )
 
 val commonKotlinOptIns = listOf(
