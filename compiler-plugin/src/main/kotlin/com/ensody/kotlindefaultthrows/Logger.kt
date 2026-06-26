@@ -1,12 +1,12 @@
 package com.ensody.kotlindefaultthrows
 
-import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
-import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.config.reportLog
 
-internal data class Logger(val debug: Boolean, val messageCollector: MessageCollector) {
+internal data class Logger(val debug: Boolean, val configuration: CompilerConfiguration) {
     fun log(message: String) {
         if (debug) {
-            messageCollector.report(CompilerMessageSeverity.WARNING, message)
+            configuration.reportLog(message)
         }
     }
 }
