@@ -18,7 +18,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Cleanup checkout
         run: git fetch --prune --prune-tags
       - name: Validate Gradle Wrapper
