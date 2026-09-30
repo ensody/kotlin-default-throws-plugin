@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.4.20"
+kotlin = "2.4.21-RC"
 kotlinForGradlePlugins = "2.1.0"
 autoService = "1.1.1"
 
