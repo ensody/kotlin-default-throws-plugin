@@ -164,7 +164,6 @@ fun KotlinMultiplatformExtension.allLinux() {
 
 fun KotlinMultiplatformExtension.allMacos() {
     macosArm64()
-    macosX64()
 }
 
 fun KotlinMultiplatformExtension.allAndroidNative() {
@@ -190,14 +189,11 @@ fun KotlinMultiplatformExtension.allIos(x64: Boolean = true) {
 
 fun KotlinMultiplatformExtension.allTvos() {
     tvosArm64()
-    tvosX64()
     tvosSimulatorArm64()
 }
 
 fun KotlinMultiplatformExtension.allWatchos(onlyComposeSupport: Boolean) {
-    watchosArm32()
     watchosArm64()
-    watchosX64()
     watchosSimulatorArm64()
     if (!onlyComposeSupport) {
         watchosDeviceArm64()
@@ -205,7 +201,7 @@ fun KotlinMultiplatformExtension.allWatchos(onlyComposeSupport: Boolean) {
 }
 
 fun KotlinMultiplatformExtension.allJs() {
-    js(IR) {
+    js {
         browser()
         nodejs()
     }
