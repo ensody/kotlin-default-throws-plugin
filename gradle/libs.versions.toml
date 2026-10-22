@@ -1,6 +1,6 @@
 [versions]
-kotlin = "2.5.0-Beta1"
-kotlinForGradlePlugins = "2.1.0"
+kotlin = "2.5.0-Beta2"
+kotlinForGradlePlugins = "2.2.0"
 autoService = "1.1.1"
 
 [libraries]
